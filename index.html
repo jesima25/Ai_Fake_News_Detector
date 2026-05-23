@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FakeNewsIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Poppins',sans-serif;background:#0a0118;color:#e2e8f0;min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;
+      background:radial-gradient(ellipse 80% 50% at 0% 0%,#1a0533,transparent 60%),
+                 radial-gradient(ellipse 60% 50% at 100% 0%,#001a3a,transparent 60%);
+      z-index:0;pointer-events:none;}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;
+        background:rgba(10,1,24,0.8);border-bottom:1px solid rgba(180,100,255,0.15);
+        backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;}
+    .logo{font-size:1.2rem;font-weight:800;}
+    .logo span{background:linear-gradient(90deg,#c084fc,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .logo em{font-style:normal;color:#f472b6;}
+    nav a{color:#4b5563;text-decoration:none;font-size:0.86rem;font-weight:500;padding:8px 16px;border-radius:10px;transition:all 0.2s;}
+    nav a:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+    nav a.active{color:#c084fc;background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.25);}
+
+    .page{max-width:780px;margin:0 auto;padding:30px 18px 60px;position:relative;z-index:1;}
+    h1{font-size:1.9rem;font-weight:800;background:linear-gradient(90deg,#c084fc,#38bdf8,#f472b6);
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+    .sub{color:#374151;font-size:0.88rem;margin-bottom:24px;}
+
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+    .stat{padding:16px;text-align:center;border-radius:14px;border:1px solid rgba(255,255,255,0.07);}
+    .stat.p{background:rgba(124,58,237,0.1);} .stat.r{background:rgba(239,68,68,0.08);} .stat.g{background:rgba(16,185,129,0.08);}
+    .stat-num{font-size:1.8rem;font-weight:700;}
+    .stat-lbl{font-size:0.7rem;text-transform:uppercase;opacity:0.5;margin-top:3px;}
+    .cp{color:#c084fc;} .cr{color:#f87171;} .cg{color:#34d399;}
+
+    .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+          border-radius:18px;padding:22px;margin-bottom:18px;backdrop-filter:blur(12px);}
+    .card-label{font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#7c3aed;margin-bottom:14px;}
+
+    /* Tabs */
+    .tabs{display:flex;gap:8px;margin-bottom:14px;}
+    .tab{padding:7px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);
+         background:transparent;color:#4b5563;font-size:0.82rem;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.2s;}
+    .tab.active{background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;border-color:transparent;}
+
+    /* Input area */
+    select{padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);
+           background:rgba(0,0,0,0.3);color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:0.82rem;margin-bottom:10px;}
+    select option{background:#1a0533;}
+    textarea{width:100%;height:130px;background:rgba(0,0,0,0.3);border:1.5px solid rgba(255,255,255,0.08);
+             border-radius:12px;color:#e2e8f0;padding:12px;font-size:13px;font-family:'Poppins',sans-serif;resize:vertical;}
+    textarea:focus{outline:none;border-color:#7c3aed;}
+    textarea::placeholder{color:#1f2937;}
+    input[type="text"]{width:100%;padding:9px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+           background:rgba(0,0,0,0.3);color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:0.82rem;margin-top:8px;}
+    input[type="text"]::placeholder{color:#374151;}
+    input[type="text"]:focus{outline:none;border-color:#7c3aed;}
+    input[type="file"]{color:#9ca3af;font-size:0.82rem;margin-top:8px;}
+
+    /* Word counter */
+    .wc{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:0.78rem;}
+    .wc-bar{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;}
+    .wc-fill{height:100%;border-radius:99px;transition:all 0.3s;}
+
+    .btn-row{display:flex;gap:10px;margin-top:12px;}
+    .btn{padding:11px 22px;border:none;border-radius:11px;font-family:'Poppins',sans-serif;
+         font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-main{background:linear-gradient(135deg,#7c3aed,#2563eb,#0891b2);background-size:200%;
+              color:#fff;flex:1;animation:gs 4s infinite;}
+    .btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,0.4);}
+    @keyframes gs{0%{background-position:0%;}50%{background-position:100%;}100%{background-position:0%;}}
+    .btn-sec{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#6b7280;}
+    .btn-sec:hover{background:rgba(255,255,255,0.1);color:#e2e8f0;}
+    .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+    /* Loader */
+    .loader{display:none;text-align:center;padding:20px;}
+    .bars{display:flex;justify-content:center;align-items:flex-end;gap:5px;height:32px;margin-bottom:8px;}
+    .bar{width:6px;border-radius:4px;animation:ba 1s ease-in-out infinite;}
+    .bar:nth-child(1){background:#7c3aed;animation-delay:0s;}
+    .bar:nth-child(2){background:#2563eb;animation-delay:0.15s;}
+    .bar:nth-child(3){background:#0891b2;animation-delay:0.3s;}
+    .bar:nth-child(4){background:#7c3aed;animation-delay:0.45s;}
+    @keyframes ba{0%,100%{height:6px;opacity:0.4;}50%{height:30px;opacity:1;}}
+    .loader p{color:#374151;font-size:0.83rem;animation:pulse 1.5s infinite;}
+    @keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+
+    /* Warning */
+    .warn-box{display:none;margin-top:14px;padding:14px 18px;border-radius:12px;
+              background:rgba(251,191,36,0.08);border:1.5px solid rgba(251,191,36,0.3);text-align:center;}
+    .warn-box h4{color:#fbbf24;font-size:0.9rem;margin-bottom:3px;}
+    .warn-box p{color:#92400e;font-size:0.8rem;}
+
+    /* Result */
+    .result{display:none;margin-top:18px;border-radius:16px;padding:22px;animation:pop 0.4s ease;}
+    @keyframes pop{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+    .result.fake{background:rgba(239,68,68,0.07);border:2px solid rgba(239,68,68,0.25);}
+    .result.real{background:rgba(16,185,129,0.07);border:2px solid rgba(16,185,129,0.25);}
+    .verdict-icon{font-size:2.5rem;margin-bottom:6px;text-align:center;}
+    .verdict-text{font-size:1.6rem;font-weight:700;text-align:center;}
+    .fake .verdict-text{color:#f87171;} .real .verdict-text{color:#34d399;}
+    .conf-txt{color:#374151;font-size:0.85rem;text-align:center;margin-bottom:12px;}
+    .prog-track{background:rgba(255,255,255,0.06);border-radius:99px;height:8px;overflow:hidden;margin-bottom:14px;}
+    .prog-fill{height:100%;width:0%;border-radius:99px;transition:width 1.2s ease;}
+    .fake .prog-fill{background:linear-gradient(90deg,#f87171,#dc2626);}
+    .real .prog-fill{background:linear-gradient(90deg,#34d399,#059669);}
+    .risk{display:inline-block;padding:5px 16px;border-radius:99px;font-size:0.8rem;font-weight:600;margin-bottom:14px;}
+    .risk-h{background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+    .risk-m{background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);}
+    .risk-l{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);}
+
+    /* Transcript box */
+    .trans-box{display:none;padding:10px 14px;border-radius:10px;margin-bottom:12px;
+               background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.15);font-size:0.8rem;}
+    .trans-box .lbl{font-size:0.68rem;color:#38bdf8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+    .trans-box p{color:#94a3b8;line-height:1.5;}
+
+    /* Signals */
+    .sec-title{font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:#7c3aed;margin:14px 0 8px;}
+    .signal{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:9px;
+            font-size:0.8rem;margin-bottom:6px;line-height:1.5;}
+    .signal.danger{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);}
+    .signal.warn{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);}
+    .signal.ok{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);}
+
+    /* Metrics */
+    .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px;}
+    .metric{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+    .metric .lbl{font-size:0.7rem;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+    .metric .bar{height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin-bottom:3px;}
+    .metric .fill{height:100%;border-radius:99px;transition:width 1s ease;}
+    .metric .val{font-size:0.78rem;font-weight:600;}
+
+    /* Source credibility */
+    .src-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+    .src-row:last-child{border:none;}
+    .src-name{font-size:0.8rem;min-width:120px;font-weight:500;}
+    .src-bar{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;}
+    .src-fill{height:100%;border-radius:99px;}
+    .sh{background:#10b981;} .sm{background:#fbbf24;} .sl{background:#ef4444;}
+    .src-score{font-size:0.75rem;color:#374151;min-width:38px;text-align:right;}
+
+    /* Reason box */
+    .reason-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+                border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+    .reason-box .lbl{font-size:0.68rem;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+    .reason-box p{font-size:0.82rem;color:#94a3b8;line-height:1.6;}
+
+    /* Keywords */
+    .kw-wrap{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px;}
+    .kw{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);color:#38bdf8;
+        padding:4px 12px;border-radius:99px;font-size:0.76rem;}
+
+    /* Action buttons */
+    .action-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+    .act-btn{padding:8px 18px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);
+             background:rgba(255,255,255,0.04);color:#9ca3af;font-size:0.8rem;cursor:pointer;
+             font-family:'Poppins',sans-serif;transition:all 0.2s;}
+    .act-btn:hover{background:rgba(255,255,255,0.08);color:#e2e8f0;}
+    .act-btn.speaking{background:rgba(124,58,237,0.15);color:#c084fc;}
+
+    /* Mini bar chart */
+    .chart-bars{display:flex;align-items:flex-end;gap:16px;height:110px;padding:0 8px;}
+    .bar-grp{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+    .bar-val{font-size:0.82rem;font-weight:600;}
+    .bar-body{width:100%;border-radius:7px 7px 0 0;min-height:4px;transition:height 1.2s cubic-bezier(0.22,1,0.36,1);}
+
+    a.view-hist{display:block;text-align:center;margin-top:12px;color:#7c3aed;font-size:0.82rem;
+               text-decoration:none;padding:9px;border-radius:9px;border:1px solid rgba(124,58,237,0.2);transition:all 0.2s;}
+    a.view-hist:hover{background:rgba(124,58,237,0.1);color:#c084fc;}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="logo"><span>Fake</span>News<em>IQ</em></div>
+  <div>
+    <a href="index.html" class="active">&#127968; Home</a>
+    <a href="history.html">&#128202; History</a>
+    <a href="about.html">&#8505;&#65039; About</a>
+  </div>
+</nav>
+
+<div class="page">
+  <h1>AI News Credibility Analyzer</h1>
+  <p class="sub">Multi-language · Explainable AI · Video &amp; YouTube · Source Credibility</p>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat p"><div class="stat-num cp" id="total">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat r"><div class="stat-num cr" id="fakeC">0</div><div class="stat-lbl">Fake</div></div>
+    <div class="stat g"><div class="stat-num cg" id="realC">0</div><div class="stat-lbl">Real</div></div>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-label">&#128196; Analyze News</div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('text',this)">&#128196; Text</button>
+      <button class="tab" onclick="switchTab('video',this)">&#127910; Video File</button>
+      <button class="tab" onclick="switchTab('youtube',this)">&#127381; YouTube</button>
+    </div>
+
+    <!-- Text Tab -->
+    <div id="tab-text">
+      <select id="lang">
+        <option value="en">&#127758; English</option>
+        <option value="ta">&#127470;&#127475; Tamil</option>
+        <option value="hi">&#127470;&#127475; Hindi</option>
+        <option value="te">&#127470;&#127475; Telugu</option>
+        <option value="bn">&#127470;&#127475; Bengali</option>
+        <option value="fr">&#127467;&#127479; French</option>
+        <option value="ar">&#127462;&#127479; Arabic</option>
+      </select>
+      <textarea id="newsText" placeholder="Paste news article here (minimum 20 words)..." oninput="updateWC()"></textarea>
+      <div class="wc">
+        <span id="wcNum" style="font-weight:600">0</span>
+        <span style="color:#374151;font-size:0.75rem">words</span>
+        <div class="wc-bar"><div class="wc-fill" id="wcFill" style="width:0%;background:#374151"></div></div>
+        <span id="wcMsg" style="font-size:0.74rem;color:#374151">Type your article</span>
+      </div>
+      <input type="text" id="urlInput" placeholder="&#127760; Optional: paste source URL for credibility check"/>
+    </div>
+
+    <!-- Video Tab -->
+    <div id="tab-video" style="display:none">
+      <p style="color:#374151;font-size:0.82rem;margin-bottom:10px">Upload a news video — speech will be extracted and analyzed.</p>
+      <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.mkv,.mp3,.wav,.m4a"/>
+      <p style="color:#1f2937;font-size:0.75rem;margin-top:8px">Supported: mp4, avi, mov, mp3, wav · Requires: moviepy SpeechRecognition pydub + ffmpeg</p>
+    </div>
+
+    <!-- YouTube Tab -->
+    <div id="tab-youtube" style="display:none">
+      <p style="color:#374151;font-size:0.82rem;margin-bottom:10px">Paste a YouTube news video URL — captions will be extracted and analyzed.</p>
+      <input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..."/>
+      <p style="color:#1f2937;font-size:0.75rem;margin-top:8px">Requires: pip install youtube-transcript-api</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-main" id="analyzeBtn" onclick="analyze()">&#128269; Analyze</button>
+      <button class="btn btn-sec" onclick="clearAll()">&#10005; Clear</button>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      <p id="loaderMsg">Analyzing...</p>
+    </div>
+
+    <!-- Warning -->
+    <div class="warn-box" id="warnBox">
+      <h4>&#9888;&#65039; Too Short!</h4>
+      <p id="warnMsg"></p>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result">
+      <div class="verdict-icon" id="vIcon"></div>
+      <div class="verdict-text"  id="vText"></div>
+      <div class="conf-txt"      id="vConf"></div>
+      <div class="prog-track"><div class="prog-fill" id="vBar"></div></div>
+      <div style="text-align:center;margin-bottom:12px"><span class="risk" id="riskBox"></span></div>
+
+      <!-- Translation -->
+      <div class="trans-box" id="transBox">
+        <div class="lbl">&#127760; Auto-translated to English</div>
+        <p id="transText"></p>
+      </div>
+
+      <!-- Transcript (video/youtube) -->
+      <div class="trans-box" id="transcriptBox">
+        <div class="lbl">&#127908; Extracted transcript</div>
+        <p id="transcriptText"></p>
+      </div>
+
+      <!-- AI Signals -->
+      <div class="sec-title">&#129504; Why this prediction?</div>
+      <div id="signalList"></div>
+
+      <!-- Detailed Reason -->
+      <div class="reason-box">
+        <div class="lbl">&#128270; Detailed Reason</div>
+        <p id="reasonText"></p>
+      </div>
+
+      <!-- Metrics -->
+      <div class="sec-title">&#128202; Linguistic Analysis</div>
+      <div class="metrics" id="metricsGrid"></div>
+
+      <!-- Source -->
+      <div id="sourceSection" style="display:none">
+        <div class="sec-title">&#127760; Source Credibility</div>
+        <div id="sourceList"></div>
+      </div>
+
+      <!-- Keywords -->
+      <div class="sec-title">&#128269; Key Influencing Words</div>
+      <div class="kw-wrap" id="kwBox"></div>
+
+      <div class="action-row">
+        <button class="act-btn" id="speakBtn" onclick="speak()">&#128266; Read Aloud</button>
+        <button class="act-btn" onclick="copyRes()">&#128203; Copy Result</button>
+      </div>
+    </div>
+
+    <a href="history.html" class="view-hist">View prediction history &#8594;</a>
+  </div>
+
+  <!-- Bar Chart -->
+  <div class="card" id="chartCard" style="display:none">
+    <div class="card-label">&#128202; Fake vs Real</div>
+    <div class="chart-bars">
+      <div class="bar-grp">
+        <div class="bar-val cr" id="fakeVal">0</div>
+        <div class="bar-body" id="fakeBar" style="height:4px;background:linear-gradient(180deg,#f87171,#dc2626)"></div>
+        <div style="font-size:0.7rem;color:#374151;text-transform:uppercase">&#128680; Fake</div>
+      </div>
+      <div class="bar-grp">
+        <div class="bar-val cg" id="realVal">0</div>
+        <div class="bar-body" id="realBar" style="height:4px;background:linear-gradient(180deg,#34d399,#059669)"></div>
+        <div style="font-size:0.7rem;color:#374151;text-transform:uppercase">&#9989; Real</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = "http://127.0.0.1:5000";
+  let activeTab = "text", speaking = false;
+
+  // ── Tab switch ────────────────────────────────
+  function switchTab(tab, btn) {
+    activeTab = tab;
+    ["text","video","youtube"].forEach(t => {
+      document.getElementById("tab-"+t).style.display = t===tab ? "block" : "none";
+    });
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    clearAll();
+  }
+
+  // ── Word counter ──────────────────────────────
+  function updateWC() {
+    const words = document.getElementById("newsText").value.trim().split(/\s+/).filter(Boolean).length;
+    const pct   = Math.min((words/50)*100, 100);
+    document.getElementById("wcNum").textContent  = words;
+    document.getElementById("wcFill").style.width = pct+"%";
+    const color = words<20?"#f87171":words<35?"#fbbf24":"#34d399";
+    document.getElementById("wcFill").style.background = color;
+    document.getElementById("wcNum").style.color        = color;
+    document.getElementById("wcMsg").textContent =
+      words===0?"Type your article":words<20?`Need ${20-words} more words`:words<35?"Good — add more for better accuracy":"Ready!";
+    document.getElementById("wcMsg").style.color = color;
+  }
+
+  // ── Analyze ───────────────────────────────────
+  async function analyze() {
+    const btn = document.getElementById("analyzeBtn");
+    btn.disabled = true;
+    hide("result"); hide("warnBox");
+    show("loader");
+
+    try {
+      let data;
+      if (activeTab === "text") {
+        const text = document.getElementById("newsText").value.trim();
+        const lang = document.getElementById("lang").value;
+        const url  = document.getElementById("urlInput").value.trim();
+        document.getElementById("loaderMsg").textContent = lang!=="en" ? "Translating and analyzing..." : "Analyzing article...";
+        const res = await fetch(API+"/predict", {method:"POST",headers:{"Content-Type":"application/json"},
+                                body:JSON.stringify({text,lang,url})});
+        data = await res.json();
+        if (data.verdict==="TOO_SHORT") {
+          document.getElementById("warnMsg").textContent = data.message;
+          show("warnBox"); hide("loader"); btn.disabled=false; return;
+        }
+      } else if (activeTab === "video") {
+        const file = document.getElementById("videoFile").files[0];
+        if (!file) { alert("Please select a video file!"); hide("loader"); btn.disabled=false; return; }
+        document.getElementById("loaderMsg").textContent = "Extracting speech from video...";
+        const fd = new FormData(); fd.append("file", file);
+        const res = await fetch(API+"/analyze_video", {method:"POST", body:fd});
+        data = await res.json();
+        if (data.error) { alert(data.error); hide("loader"); btn.disabled=false; return; }
+      } else {
+        const url = document.getElementById("ytUrl").value.trim();
+        if (!url) { alert("Please paste a YouTube URL!"); hide("loader"); btn.disabled=false; return; }
+        document.getElementById("loaderMsg").textContent = "Fetching YouTube transcript...";
+        const res = await fetch(API+"/analyze_youtube", {method:"POST",headers:{"Content-Type":"application/json"},
+                                body:JSON.stringify({url})});
+        data = await res.json();
+        if (data.error) { alert(data.error); hide("loader"); btn.disabled=false; return; }
+      }
+      showResult(data);
+      loadStats();
+    } catch(e) {
+      alert("Cannot connect to server. Make sure api.py is running.");
+    }
+    hide("loader"); btn.disabled=false;
+  }
+
+  // ── Show result ───────────────────────────────
+  function showResult(d) {
+    const box = document.getElementById("result");
+    box.className = "result " + d.verdict.toLowerCase();
+    document.getElementById("vIcon").textContent = d.verdict==="FAKE" ? "🚨" : "✅";
+    document.getElementById("vText").textContent = d.verdict==="FAKE" ? "FAKE NEWS" : "REAL NEWS";
+    document.getElementById("vConf").textContent = "Confidence: "+d.confidence+"%";
+    setTimeout(()=>document.getElementById("vBar").style.width = d.confidence+"%", 100);
+
+    // Risk
+    const rb = document.getElementById("riskBox");
+    if (d.verdict==="FAKE") {
+      rb.textContent = d.confidence>=90?"🔴 High Risk":d.confidence>=70?"🟡 Medium Risk":"🟢 Low Risk";
+      rb.className   = "risk "+(d.confidence>=90?"risk-h":d.confidence>=70?"risk-m":"risk-l");
+    } else {
+      rb.textContent = d.confidence>=90?"🟢 Highly Credible":d.confidence>=70?"🟡 Fairly Credible":"🔴 Verify This";
+      rb.className   = "risk "+(d.confidence>=90?"risk-l":d.confidence>=70?"risk-m":"risk-h");
+    }
+
+    // Translation
+    const tb = document.getElementById("transBox");
+    if (d.translated_text) { document.getElementById("transText").textContent=d.translated_text; show("transBox"); }
+    else hide("transBox");
+
+    // Transcript
+    const trb = document.getElementById("transcriptBox");
+    if (d.transcript) {
+      document.getElementById("transcriptText").textContent = d.transcript.substring(0,300)+"...";
+      show("transcriptBox");
+    } else hide("transcriptBox");
+
+    // Signals
+    const sl = document.getElementById("signalList");
+    sl.innerHTML = (d.signals||[]).map(s=>
+      `<div class="signal ${s.type}"><span>${s.icon}</span><span>${s.text}</span></div>`
+    ).join("");
+
+    // Reason
+    document.getElementById("reasonText").textContent = d.reason || "";
+
+    // Metrics
+    document.getElementById("metricsGrid").innerHTML = (d.metrics||[]).map(m => {
+      const c = m.label==="Factual references" ? (m.value>50?"#10b981":"#ef4444") : (m.value>55?"#ef4444":"#10b981");
+      return `<div class="metric">
+        <div class="lbl">${m.label}</div>
+        <div class="bar"><div class="fill" style="width:0%;background:${c}" data-w="${m.value}"></div></div>
+        <div class="val" style="color:${c}">${m.value}/100</div>
+      </div>`;
+    }).join("");
+    setTimeout(()=>document.querySelectorAll(".metric .fill").forEach(el=>el.style.width=el.dataset.w+"%"), 100);
+
+    // Source
+    if (d.source_credibility && d.source_credibility.length) {
+      document.getElementById("sourceList").innerHTML = d.source_credibility.map(s => {
+        const c = s.score>70?"sh":s.score>40?"sm":"sl";
+        return `<div class="src-row">
+          <span class="src-name">${s.name}</span>
+          <div class="src-bar"><div class="src-fill ${c}" style="width:${s.score}%"></div></div>
+          <span class="src-score">${s.score}/100</span>
+        </div>`;
+      }).join("");
+      show("sourceSection");
+    } else hide("sourceSection");
+
+    // Keywords
+    document.getElementById("kwBox").innerHTML = (d.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+
+    show("result");
+  }
+
+  // ── Speech ────────────────────────────────────
+  function speak() {
+    if (speaking) {
+      speechSynthesis.cancel(); speaking=false;
+      document.getElementById("speakBtn").textContent="🔊 Read Aloud";
+      document.getElementById("speakBtn").classList.remove("speaking");
+      return;
+    }
+    const verdict = document.getElementById("vText").textContent;
+    const conf    = document.getElementById("vConf").textContent;
+    const risk    = document.getElementById("riskBox").textContent.replace(/[🔴🟡🟢]/g,"");
+    const reason  = document.getElementById("reasonText").textContent;
+    const signalEls = document.querySelectorAll("#signalList .signal span:last-child");
+    const signals   = Array.from(signalEls).map(el => el.textContent).join(". ");
+    const fullText  = `Result: ${verdict}. ${conf}. Risk level: ${risk}. Reason: ${reason}. ` + (signals ? `Key signals: ${signals}.` : "");
+    const u = new SpeechSynthesisUtterance(fullText);
+    u.rate=0.88; u.pitch=1;
+    u.onstart=()=>{ speaking=true;  document.getElementById("speakBtn").textContent="⏹ Stop Reading"; document.getElementById("speakBtn").classList.add("speaking"); };
+    u.onend=()=>{ speaking=false; document.getElementById("speakBtn").textContent="🔊 Read Aloud"; document.getElementById("speakBtn").classList.remove("speaking"); };
+    speechSynthesis.speak(u);
+  }
+
+  // ── Copy ──────────────────────────────────────
+  function copyRes() {
+    const text = `FakeNewsIQ Result\n${document.getElementById("vText").textContent}\n${document.getElementById("vConf").textContent}\n\nReason: ${document.getElementById("reasonText").textContent}`;
+    navigator.clipboard.writeText(text).then(()=>{
+      event.target.textContent="✅ Copied!";
+      setTimeout(()=>event.target.textContent="📋 Copy Result",2000);
+    });
+  }
+
+  // ── Clear ─────────────────────────────────────
+  function clearAll() {
+    document.getElementById("newsText").value = "";
+    document.getElementById("urlInput").value = "";
+    document.getElementById("ytUrl") && (document.getElementById("ytUrl").value="");
+    speechSynthesis.cancel(); speaking=false;
+    hide("result"); hide("warnBox"); hide("loader");
+    updateWC();
+  }
+
+  // ── Stats + chart ─────────────────────────────
+  async function loadStats() {
+    try {
+      const d = await (await fetch(API+"/stats")).json();
+      document.getElementById("total").textContent = d.total;
+      document.getElementById("fakeC").textContent = d.fake;
+      document.getElementById("realC").textContent = d.real;
+      if (d.total > 0) {
+        show("chartCard");
+        const max=Math.max(d.fake,d.real,1);
+        document.getElementById("fakeVal").textContent=d.fake;
+        document.getElementById("realVal").textContent=d.real;
+        setTimeout(()=>{
+          document.getElementById("fakeBar").style.height=Math.max(4,(d.fake/max)*90)+"px";
+          document.getElementById("realBar").style.height=Math.max(4,(d.real/max)*90)+"px";
+        },150);
+      }
+    } catch(e) {}
+  }
+
+  function show(id){ document.getElementById(id).style.display="block"; }
+  function hide(id){ document.getElementById(id).style.display="none"; }
+
+  document.getElementById("newsText").addEventListener("keydown", e=>{
+    if(e.ctrlKey && e.key==="Enter") analyze();
+  });
+
+  loadStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FakeNewsIQ — History</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;min-height:100vh;color:#e2e8f0;background:#0a0118;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse 80% 50% at 0% 0%,#1a0533 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 100% 0%,#001a3a 0%,transparent 60%),
+             radial-gradient(ellipse 60% 60% at 50% 100%,#0a1a1a 0%,transparent 60%),
+             radial-gradient(ellipse 40% 40% at 80% 50%,#12002a 0%,transparent 50%);
+  z-index:0;pointer-events:none;}
+.page{max-width:760px;margin:0 auto;padding:0 18px 60px;position:relative;z-index:1;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;
+    background:rgba(10,1,24,0.7);border-bottom:1px solid rgba(180,100,255,0.15);
+    backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;margin-bottom:42px;}
+.logo{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.logo span{background:linear-gradient(90deg,#c084fc,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo em{font-style:normal;color:#f472b6;}
+.nav-links a{color:#4b5563;text-decoration:none;margin-left:4px;font-size:0.86rem;font-weight:500;padding:8px 16px;border-radius:10px;transition:all 0.25s;}
+.nav-links a:hover{color:#e2e8f0;background:rgba(255,255,255,0.06);}
+.nav-links a.active{color:#c084fc;background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.25);}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:26px;margin-bottom:20px;backdrop-filter:blur(12px);transition:border-color 0.3s;}
+.card:hover{border-color:rgba(192,132,252,0.25);}
+.card-label{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#7c3aed;margin-bottom:16px;}
+h1{font-size:2rem;font-weight:800;background:linear-gradient(90deg,#c084fc,#38bdf8,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;line-height:1.2;}
+.sub{color:#374151;font-size:0.9rem;margin-bottom:30px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.stat-box{border-radius:16px;padding:20px 14px;text-align:center;border:1px solid rgba(255,255,255,0.07);transition:transform 0.2s;}
+.stat-box:hover{transform:translateY(-4px);}
+.stat-box.purple{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.2);}
+.stat-box.red{background:rgba(239,68,68,0.10);border-color:rgba(239,68,68,0.2);}
+.stat-box.green{background:rgba(16,185,129,0.10);border-color:rgba(16,185,129,0.2);}
+.stat-num{font-size:2rem;font-weight:700;margin-bottom:5px;}
+.stat-lbl{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;opacity:0.5;}
+.c-purple{color:#c084fc;}.c-red{color:#f87171;}.c-green{color:#34d399;}.c-blue{color:#38bdf8;}
+table{width:100%;border-collapse:collapse;font-size:0.86rem;}
+th{text-align:left;padding:10px 14px;color:#374151;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:#9ca3af;vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+tr:last-child td{border:none;}
+.tag{padding:4px 12px;border-radius:99px;font-size:0.73rem;font-weight:600;}
+.tag.fake{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+.tag.real{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.2);}
+.lang-badge{padding:2px 8px;border-radius:99px;font-size:0.68rem;font-weight:600;background:rgba(56,189,248,0.1);color:#38bdf8;border:1px solid rgba(56,189,248,0.2);}
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.fbtn{padding:8px 18px;border-radius:99px;border:1px solid rgba(255,255,255,0.08);
+       background:transparent;color:#4b5563;font-size:0.82rem;cursor:pointer;
+       transition:all 0.2s;font-family:'Poppins',sans-serif;font-weight:500;}
+.fbtn:hover{border-color:#7c3aed;color:#c084fc;}
+.fbtn.active{background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;border-color:transparent;}
+.fbtn-red{border-color:rgba(239,68,68,0.2);color:#f87171;}
+.fbtn-red:hover,.fbtn-red.active{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.3);}
+.fbtn-clear{margin-left:auto;border-color:rgba(239,68,68,0.2);color:#f87171;}
+.fbtn-clear:hover{background:rgba(239,68,68,0.1);}
+.chart-area{display:flex;align-items:flex-end;gap:10px;height:130px;padding:0 6px 0;margin-top:8px;}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.bar-val{font-size:0.82rem;font-weight:600;}
+.bar-body{width:70%;border-radius:8px 8px 0 0;transition:height 1.3s cubic-bezier(0.22,1,0.36,1);min-height:4px;}
+.bar-body.fake{background:linear-gradient(180deg,#f87171 0%,#dc2626 100%);}
+.bar-body.real{background:linear-gradient(180deg,#34d399 0%,#059669 100%);}
+.bar-lbl{font-size:0.72rem;color:#374151;text-transform:uppercase;letter-spacing:0.5px;}
+.conf-mini{display:inline-block;width:60px;height:5px;background:rgba(255,255,255,0.06);border-radius:99px;vertical-align:middle;margin-left:8px;overflow:hidden;}
+.conf-mini-fill{height:100%;border-radius:99px;}
+.empty{text-align:center;color:#1f2937;padding:36px;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="logo"><span>Fake</span>News<em>IQ</em></div>
+  <div class="nav-links">
+    <a href="index.html">&#127968; Home</a>
+    <a href="history.html" class="active">&#128202; History</a>
+    <a href="about.html">&#8505;&#65039; About</a>
+  </div>
+</nav>
+<div class="page">
+  <h1>Prediction History</h1>
+  <p class="sub">All predictions with language, source URL, animated chart and filters</p>
+
+  <div class="stats">
+    <div class="stat-box purple"><div class="stat-num c-purple" id="total">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box red">   <div class="stat-num c-red"    id="fakeC">0</div><div class="stat-lbl">Fake</div></div>
+    <div class="stat-box green"> <div class="stat-num c-green"  id="realC">0</div><div class="stat-lbl">Real</div></div>
+  </div>
+
+  <!-- Animated Bar Chart -->
+  <div class="card" id="chartCard" style="display:none">
+    <div class="card-label">&#128202; Animated Bar Chart</div>
+    <div class="chart-area">
+      <div class="bar-group">
+        <div class="bar-val c-red"   id="fakeVal">0</div>
+        <div class="bar-body fake"   id="fakeBar" style="height:4px;width:80%;"></div>
+        <div class="bar-lbl">&#128680; Fake</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-val c-green" id="realVal">0</div>
+        <div class="bar-body real"   id="realBar" style="height:4px;width:80%;"></div>
+        <div class="bar-lbl">&#9989; Real</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Row -->
+  <div class="filters">
+    <button class="fbtn active"   onclick="filter('all',this)">All</button>
+    <button class="fbtn fbtn-red" onclick="filter('fake',this)">&#128680; Fake Only</button>
+    <button class="fbtn"          onclick="filter('real',this)">&#9989; Real Only</button>
+    <button class="fbtn"          onclick="filter('ta',this)">&#127470;&#127475; Tamil</button>
+    <button class="fbtn"          onclick="filter('hi',this)">&#127470;&#127475; Hindi</button>
+    <button class="fbtn fbtn-clear" onclick="clearAll()">&#128465; Clear All</button>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-label">&#128196; Predictions</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>News Snippet</th>
+          <th>Lang</th>
+          <th>Result</th>
+          <th>Confidence</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="5" class="empty">No predictions yet — go to Home and analyze some news!</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const API = "http://127.0.0.1:5000";
+  let all = [];
+  let currentFilter = "all";
+
+  const LANG_NAMES = {
+    en: "EN", ta: "TA", hi: "HI", te: "TE", bn: "BN", fr: "FR", ar: "AR"
+  };
+
+  async function load() {
+    try {
+      const r1 = await fetch(API + "/history"); all = await r1.json();
+      const r2 = await fetch(API + "/stats");  const s = await r2.json();
+      document.getElementById("total").textContent = s.total;
+      document.getElementById("fakeC").textContent = s.fake;
+      document.getElementById("realC").textContent = s.real;
+      renderTable(all);
+      if (s.total > 0) {
+        document.getElementById("chartCard").style.display = "block";
+        const max = Math.max(s.fake, s.real, 1); const maxH = 110;
+        document.getElementById("fakeVal").textContent = s.fake;
+        document.getElementById("realVal").textContent = s.real;
+        setTimeout(() => {
+          document.getElementById("fakeBar").style.height = Math.max(6,(s.fake/max)*maxH)+"px";
+          document.getElementById("realBar").style.height = Math.max(6,(s.real/max)*maxH)+"px";
+        }, 150);
+      }
+    } catch(e) {}
+  }
+
+  function renderTable(data) {
+    const tb = document.getElementById("tbody");
+    if (!data.length) {
+      tb.innerHTML = '<tr><td colspan="5" class="empty">No predictions found.</td></tr>';
+      return;
+    }
+    tb.innerHTML = data.map((h, i) => `
+      <tr>
+        <td style="color:#1f2937">${i+1}</td>
+        <td>${(h.text || "").substring(0, 50)}...</td>
+        <td><span class="lang-badge">${LANG_NAMES[h.lang] || "EN"}</span></td>
+        <td><span class="tag ${(h.verdict||"").toLowerCase()}">${h.verdict}</span></td>
+        <td>
+          ${h.conf}%
+          <span class="conf-mini">
+            <span class="conf-mini-fill" style="width:${h.conf}%;background:${h.verdict==='FAKE'?'#dc2626':'#059669'}"></span>
+          </span>
+        </td>
+      </tr>`).join("");
+  }
+
+  function filter(type, btn) {
+    document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = type;
+    let filtered = all;
+    if (type === "fake" || type === "real") {
+      filtered = all.filter(h => h.verdict === type.toUpperCase());
+    } else if (type !== "all") {
+      filtered = all.filter(h => h.lang === type);
+    }
+    renderTable(filtered);
+  }
+
+  async function clearAll() {
+    if (!confirm("Clear all history?")) return;
+    await fetch(API + "/clear", { method: "POST" });
+    all = []; renderTable([]); load();
+  }
+
+  load();
+</script>
+</body>
+</html>
