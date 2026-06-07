@@ -42,6 +42,14 @@
 
 ---
 
+## 🖥️ Screenshots
+
+![Home](home.png)
+![History](history.png)
+![About](about.png)
+
+---
+
 ## 🖥️ Tech Stack
 
 | Layer | Technology |
