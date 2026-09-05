@@ -33,9 +33,6 @@
 | 📈 Dashboard | Fake vs Real bar chart with prediction history |
 | 💾 Persistent History | SQLite database — predictions saved across sessions |
 
----
-
-## 🖥️ Screenshots
 
 ## 🖥️ Tech Stack
 
