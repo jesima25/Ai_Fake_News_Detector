@@ -17,13 +17,6 @@
 - 🎓 Final Year Project — 2026
 - 🏫 Department of Computer Science
 
----
-
-## 🔗 Live Demo
-
-👉 [https://jesima932-fake-news-detection.hf.space/](https://jesima932-fake-news-detection.hf.space/)
-
----
 
 ## ✨ Features
 
@@ -43,13 +36,6 @@
 ---
 
 ## 🖥️ Screenshots
-
-![Home](home.png)
-
-![History](history.png)
-
-![About](about.png)
----
 
 ## 🖥️ Tech Stack
 
@@ -88,41 +74,6 @@ Ai_Fake_News_Detector/
 └── Procfile                # Deployment config
 ```
 
----
-
-## ⚙️ Installation & Setup
-
-### Step 1 — Clone the repository
-```bash
-git clone https://github.com/jesima25/Ai_Fake_News_Detector.git
-cd Ai_Fake_News_Detector
-```
-
-### Step 2 — Install required libraries
-```bash
-pip install -r requirements.txt
-```
-
-### Step 3 — Install optional libraries for extra features
-```bash
-pip install googletrans==4.0.0rc1
-pip install moviepy SpeechRecognition pydub
-pip install youtube-transcript-api
-```
-
-### Step 4 — Run the server
-```bash
-python api.py
-```
-
-### Step 5 — Open in browser
-```
-http://127.0.0.1:7860
-```
-
-> ⚠️ Always open through `http://127.0.0.1:7860` — never double-click the HTML file directly.
-
----
 
 ## 🧠 How It Works
 
@@ -165,7 +116,7 @@ User Input (Text / Video / YouTube URL)
 
 ## 🌍 Supported Languages
 
-Tamil · Hindi · Telugu · Bengali · French · Arabic · English
+Tamil · Hindi  · English
 
 ---
 
@@ -189,29 +140,9 @@ confirmed policymakers want further evidence of cooling inflation.
 ```
 **Result → REAL (97% confidence)**
 
----
-
-## 🔮 Future Enhancements
-
-- [ ] Chrome browser extension
-- [ ] Real-time news API verification
-- [ ] Image fake news detection
-- [ ] Deepfake video detection
-- [ ] Mobile app
-
----
 
 ## 📄 License
 
 This project is licensed under the MIT License.
-
----
-
-## 🙏 Acknowledgements
-
-- Dataset: [Fake and Real News Dataset — Kaggle](https://www.kaggle.com/clmentbisaillon/fake-and-real-news-dataset)
-- Scikit-learn, Flask, and open source community
-
----
 
 ⭐ **If you found this project helpful, please give it a star!**
